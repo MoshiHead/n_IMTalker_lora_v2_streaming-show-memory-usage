@@ -476,7 +476,9 @@ def main():
     if setup_tunnel is not None:
         tunnel = setup_tunnel('localhost', args.port, tunnel_token, None)
         logger.info(f"Tunnel started, if executing on a remote GPU, you can use {tunnel}.")
-    web.run_app(app, port=args.port, ssl_context=ssl_context)
+    # Defaults (8190 bytes) are too small for long text_prompt values, which are
+    # passed as a query param on the /api/chat request line.
+    web.run_app(app, port=args.port, ssl_context=ssl_context, max_line_size=2**16, max_field_size=2**16)
 
 
 with torch.no_grad():
